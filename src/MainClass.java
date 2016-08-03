@@ -1,6 +1,8 @@
 import java.io.File;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Scanner;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -14,58 +16,48 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.unity.mkulikie.connect.Connect;
+
 /**
  * Search Google example.
  *
  * @author Rahul
  */
 public class MainClass {
-    volatile static WebDriver driver;
+    static Connect connect;
+    static WebDriver driver;
     static Wait<WebDriver> wait;
-   
-    
 //TESTy bez apium
     public static void main(String[] args) {
-    	System.setProperty("webdriver.chrome.driver", "C:/Users/mkulikie/Downloads/selenium-java-2.53.1/chromedriver.exe");
-       // driver = new ChromeDriver();
-    	
-    	try {
-			creatApk();
-		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-        wait = new WebDriverWait(driver, 30);
-        driver.get("http://www.google.com/");
-        boolean result;
-        try {
-            result = firstPageContainsQAANet();
-        } catch(Exception e) {
-            e.printStackTrace();
-            result = false;
-        } finally {
-            driver.close();
-        }
-
-        System.out.println("Test " + (result? "passed." : "failed."));
-        if (!result) {
-            System.exit(1);
-        }
+    	Scanner scan = new Scanner(System.in);
+    	System.out.println("Testy automatyczne sig co chcesz przetestowac ?\n1.urz¹dzenie fizyczne");
+    	connect = new Connect(scan.nextLine());
+    	driver = connect.getDriver();
+    	if(driver !=null){
+	        wait = new WebDriverWait(driver, 30);
+	        driver.get("http://www.google.com/");
+	        boolean result;
+	        try {
+	            result = firstPageContainsQAANet();
+	        } catch(Exception e) {
+	            e.printStackTrace();
+	            result = false;
+	        } finally {
+	            driver.close();
+	        }
+	
+	        System.out.println("Test " + (result? "passed." : "failed."));
+	        if (!result) {
+	            System.exit(1);
+	        }
+    	}
     }
 
-    private static void creatApk() throws MalformedURLException {
-//	File classpathRoot = new File (System.getProperty("user.dir"));
-//	File appDir = new File (classpathRoot , "Application");
-//	File app = new File (appDir , "Demo1.apk");
-//	DesiredCapabilities capabilities;
-//	capabilities = "{'chromeOptions': {'androidPackage': 'com.android.chrome',} }";
-////	capabilities.setCapability("device", "Android");
-////	capabilities.setCapability("app", app.getAbsolutePath());
-////	capabilities.setCapability("app-package", "com.maciek.testowy.demo1");
-////	capabilities.setCapability("app-activity", ".RootActivity");
-//	driver = new RemoteWebDriver(new URL("http://127.0.0.1:4723/wud/hub") , capabilities);
+    
+	private static void creatApk() throws MalformedURLException {
+
     		try{
-    		String deviceId = "42030a30c4536100" ; //"LGD855170940ac" ;//"eb368ae613398ab8";
+    		String deviceId = "LGD855170940ac" ; //"LGD855170940ac" ;//"eb368ae613398ab8";
     	    ChromeOptions chromeOptions = new ChromeOptions();
     	    chromeOptions.setExperimentalOption("androidPackage", "com.android.chrome");
     	    chromeOptions.setExperimentalOption("androidDeviceSerial", deviceId);
@@ -93,7 +85,7 @@ public class MainClass {
                 return webDriver.findElement(By.id("body"))  != null;
             }
         });
-
+  
         // Look for QAAutomation.net in the results
         
         return driver.findElement(By.tagName("body")).getText().contains("qaautomation.net");
